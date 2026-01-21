@@ -11,11 +11,13 @@ model = genai.GenerativeModel('gemini-2.5-flash-lite')
 # Let's create sidebar for image upload
 st.sidebar.title(":red[Upload Image]")
 uploaded_image = st.sidebar.file_uploader("Choose an image...", type=["jpg", "jpeg","png","jfif"],accept_multiple_files=True)
+uploaded_image = [Image.open(img) for img in uploaded_image] 
 if uploaded_image:
     st.sidebar.success('Image has been loaded successfully')
-    uploaded_image = Image.open(uploaded_image[0])
+    
     st.sidebar.subheader(':blue[Uploaded Image]')
     st.sidebar.image(uploaded_image)
+    
 # Let's create the main page
 st.title(':orange[DEFECT_FINDERAI:-] :blue[AI Assisted Structural Defect Identifier]')
 st.markdown("### :green[Upload images of structural defects to identify & get solution using AI.]")
@@ -46,10 +48,10 @@ if st.button('Submit'):
         * The report generated should be in MS_Word format.
         * Make sure the report doesn't exceed 2 pages.
         '''
-        response = model.generate_content([uploaded_image,prompt],generation_config={'temperature':0.8})
+        response = model.generate_content([prompt,*uploaded_image],generation_config={'temperature':0.8})
         st.write(response.text)
-        if st.download_button(label='Click to Download',data = response.text,file_name='structural defect report.txt',mime = 'text/plain'):
-            st.success('Your file is downloaded')
+    if st.download_button(label='Click to Download',data = response.text,file_name='structural defect report.txt',mime = 'text/plain'):
+        st.success('Your file is downloaded')
 
 
 
